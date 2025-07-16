@@ -10,6 +10,9 @@ function launcher() {
     # set default config
     mkdir -p $HOME/.config/sway
     cp -r /opt/gow/sway/* $HOME/.config/sway
+
+    # add flathub repo
+    flatpak remote-add --user --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
     
     
     # Create commun folders
@@ -33,7 +36,13 @@ function launcher() {
   export DISPLAY=:0
   export $(dbus-launch)
   export REAL_WAYLAND_DISPLAY=$WAYLAND_DISPLAY
+  export TERM=xterm
+  export PATH="$PATH:/home/retro/.junest/usr/bin_wrappers"
+  export PATH="$PATH:/home/retro/.local/share/junest/bin"
+
+
+  /home/retro/.local/share/junest/bin/sudoj /home/retro/.junest/usr/bin_wrappers/pacman -S swayfx
   #
-  # Start Xwayland and xfce4
-  dbus-run-session -- bash -E -c sway
+  # Start Xwayland and swayfx
+  dbus-run-session -- bash -E -c swayfx
 }

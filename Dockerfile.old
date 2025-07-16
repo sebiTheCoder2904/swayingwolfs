@@ -12,6 +12,16 @@ ARG CORE_PACKAGES=" \
 
 ARG DE_PACKAGES=" \
     sway \
+    at-spi2-core \
+    waybar \
+    wofi \
+    bemenu \
+    swaybg \
+    swayidle \
+    grim \
+    slurp \
+    wl-clipboard \
+    cliphist \
     "
 
 ARG ADDITIONAL_PACKAGES=" \
@@ -27,6 +37,9 @@ RUN \
     # \
     # Install core packages \
     apt-get install -y $CORE_PACKAGES && \
+    # \
+    # Install de \
+    apt-get install -y $DE_PACKAGES && \
     # \
     # Install additional apps \
     apt-get install -y --no-install-recommends $ADDITIONAL_PACKAGES && \
@@ -60,20 +73,9 @@ COPY scripts/locale /etc/default/locale
 # Allow anyone to start dbus without password
 RUN echo "\nALL ALL=NOPASSWD: /opt/gow/startdbus" >> /etc/sudoers
 
-RUN chown root:root /usr/bin/bwrap
-RUN chmod a+x /usr/bin/bwrap
+RUN chmod u+s /usr/bin/bwrap
 
 ENV XDG_RUNTIME_DIR=/tmp/.X11-unix
 
 ARG IMAGE_SOURCE
 LABEL org.opencontainers.image.source=$IMAGE_SOURCE
-
-
-# junest
-
-RUN git clone https://github.com/fsquillace/junest.git /home/retro/.local/share/junest 
-
-ENV PATH="$PATH:/home/retro/.junest/usr/bin_wrappers"
-ENV PATH="$PATH:/home/retro/.local/share/junest/bin"
-
-RUN  junest setup

@@ -10,7 +10,7 @@ for file in /opt/gow/startup.d/* ; do
     fi
 done
 
-gow_log "[start] Starting Sway"
+gow_log "[start] Starting SwayFx"
 
 source /opt/gow/launch-comp.sh
 launcher
