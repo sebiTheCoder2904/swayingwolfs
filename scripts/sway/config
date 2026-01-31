@@ -7,7 +7,7 @@
 ### Variables
 #
 # Logo key. Use Mod1 for Alt.
-set $mod Mod1
+set $mod Mod4
 # Home row direction keys, like vim
 set $left h
 set $down j
@@ -16,52 +16,45 @@ set $right l
 # Your preferred terminal emulator
 set $term kitty
 # Your preferred application launcher
-set $menu wofi --show=run
+set $menu rofi -show drun
 
-font pango:ComicShannsMono Nerd Font 11
-client.focused #ff0000 #ff0000 #ffffff #ff0000 #ff0000
+
+### Autostart
+exec quickshell
+# exec rclone mount onedrive: onedrive --vfs-cache-mode full
+# exec kdeconnectd
+exec $term
 
 ### Output configuration
 #
-# Default wallpaper (more resolutions are available in /usr/share/backgrounds/sway/)
-# output * bg /home/retro/Downloads/01.jpg fill
-#
+# Default wallpaper (more resolutions are available in @datadir@/backgrounds/sway/)
+output * bg ~/.config/sway/wallpapers/wp4.jpg fill
+exec swaybg -o "*" -i ~/.config/sway/wallpapers/wp4.jpg
+
 # Example configuration:
 #
-#   output HDMI-A-1 resolution 1920x1080 position 1920,0
-#
+# output X11-1 resolution 3440x1440 position 0,0
 # You can get the names of your outputs by running: swaymsg -t get_outputs
 
-### Idle configuration
-#
-# Example configuration:
-#
-# exec swayidle -w \
-#          timeout 300 'swaylock -f -c 000000' \
-#          timeout 600 'swaymsg "output * power off"' resume 'swaymsg "output * power on"' \
-#          before-sleep 'swaylock -f -c 000000'
-#
-# This will lock your screen after 300 seconds of inactivity, then turn off
-# your displays after another 300 seconds, and turn your screens back on when
-# resumed. It will also lock your screen before your computer goes to sleep.
+### Look and Feel
+gaps inner 10
+gaps outer 10
+default_border none 
+for_window [title="^.*"] title_format ""
+default_border none
+default_floating_border none
 
-### Input configuration
+
+### Input devices
 #
-# Example configuration:
-#
-#   input type:touchpad {
-#       dwt enabled
-#       tap enabled
-#       natural_scroll enabled
-#       middle_emulation enabled
-#   }
-#
-   input type:keyboard {
-       xkb_layout "de"
-   }
-#
-# You can also configure each device individually.
-# Read `man 5 sway-input` for more information about this section.
+
+input * repeat_delay 220
+input * repeat_rate 30
+
+input "type:keyboard" {
+    xkb_layout "us"
+    xkb_variant "intl"
+}
 
 ### Key bindings
 #
@@ -71,7 +64,7 @@ client.focused #ff0000 #ff0000 #ffffff #ff0000 #ff0000
     bindsym $mod+q exec $term
 
     # Kill focused window
-    bindsym $mod+Shift+q kill
+    bindsym $mod+c kill
 
     # Start your launcher
     bindsym $mod+d exec $menu
@@ -87,7 +80,7 @@ client.focused #ff0000 #ff0000 #ffffff #ff0000 #ff0000
     bindsym $mod+Shift+c reload
 
     # Exit sway (logs you out of your Wayland session)
-    bindsym $mod+Shift+e exec swaynag -t warning -m 'You pressed the exit shortcut. Do you really want to exit sway? This will end your Wayland session.' -B 'Yes, exit sway' 'swaymsg exit'
+    bindsym $mod+Shift+e swaymsg exit
 #
 # Moving around:
 #
@@ -115,31 +108,12 @@ client.focused #ff0000 #ff0000 #ffffff #ff0000 #ff0000
 #
 # Workspaces:
 #
-    # Switch to workspace
-    bindsym $mod+1 workspace number 1
-    bindsym $mod+2 workspace number 2
-    bindsym $mod+3 workspace number 3
-    bindsym $mod+4 workspace number 4
-    bindsym $mod+5 workspace number 5
-    bindsym $mod+6 workspace number 6
-    bindsym $mod+7 workspace number 7
-    bindsym $mod+8 workspace number 8
-    bindsym $mod+9 workspace number 9
-    bindsym $mod+0 workspace number 10
-    # Move focused container to workspace
-    bindsym $mod+Shift+1 move container to workspace number 1
-    bindsym $mod+Shift+2 move container to workspace number 2
-    bindsym $mod+Shift+3 move container to workspace number 3
-    bindsym $mod+Shift+4 move container to workspace number 4
-    bindsym $mod+Shift+5 move container to workspace number 5
-    bindsym $mod+Shift+6 move container to workspace number 6
-    bindsym $mod+Shift+7 move container to workspace number 7
-    bindsym $mod+Shift+8 move container to workspace number 8
-    bindsym $mod+Shift+9 move container to workspace number 9
-    bindsym $mod+Shift+0 move container to workspace number 10
-    # Note: workspaces can have any name you want, not just numbers.
-    # We just use 1-10 as the default.
-#
+
+    bindsym $mod+n exec ~/.config/sway/script/workspace.sh next
+    bindsym $mod+m exec ~/.config/sway/script/workspace.sh prev 
+    bindsym $mod+Shift+n exec ~/.config/sway/script/workspace.sh window next
+    bindsym $mod+Shift+m exec ~/.config/sway/script/workspace.sh window prev
+
 # Layout stuff:
 #
     # You can "split" the current object of your focus with
@@ -157,10 +131,10 @@ client.focused #ff0000 #ff0000 #ffffff #ff0000 #ff0000
     bindsym $mod+f fullscreen
 
     # Toggle the current focus between tiling and floating mode
-    bindsym $mod+Shift+space floating toggle
+    bindsym $mod+space floating toggle
 
     # Swap focus between the tiling area and the floating area
-    bindsym $mod+space focus mode_toggle
+    bindsym $mod+Shift+space focus mode_toggle
 
     # Move focus to the parent container
     bindsym $mod+a focus parent
@@ -208,28 +182,25 @@ bindsym $mod+r mode "resize"
     bindsym --locked XF86AudioLowerVolume exec pactl set-sink-volume \@DEFAULT_SINK@ -5%
     bindsym --locked XF86AudioRaiseVolume exec pactl set-sink-volume \@DEFAULT_SINK@ +5%
     bindsym --locked XF86AudioMicMute exec pactl set-source-mute \@DEFAULT_SOURCE@ toggle
+
+    # Special keys to control media via playerctl
+    bindsym --locked XF86AudioPlay exec playerctl play-pause
+    bindsym --locked XF86AudioPause exec playerctl play-pause
+    bindsym --locked XF86AudioPrev exec playerctl previous
+    bindsym --locked XF86AudioNext exec playerctl next
+    bindsym --locked XF86AudioStop exec playerctl stop
+
     # Special keys to adjust brightness via brightnessctl
     bindsym --locked XF86MonBrightnessDown exec brightnessctl set 5%-
     bindsym --locked XF86MonBrightnessUp exec brightnessctl set 5%+
+
     # Special key to take a screenshot with grim
     bindsym Print exec grim
 
+### special widnow rules
 #
-# Status Bar:
-#
-# Read `man 5 sway-bar` for more information about this section.
-bar {
-    position top
 
-    # When the status_command prints a new line to stdout, swaybar updates.
-    # The default just shows the current date and time.
-    status_command while date +'%Y-%m-%d %X'; do sleep 1; done
+for_window [app_id="anki"] floating enable
 
-    colors {
-        statusline #ff0000
-        background #000000
-        inactive_workspace #32323200 #32323200 #5c5c5c
-    }
-}
 
-include /etc/sway/config.d/*
+include @sysconfdir@/sway/config.d/*

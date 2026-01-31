@@ -1,25 +1,22 @@
 FROM gameonwhales/base-app:edge
 
+ARG DEBIAN_FRONTEND=noninteractive
+
 ARG CORE_PACKAGES=" \
     lsb-release \
     wget \
     gnupg2 \
     dbus-x11 \
     sudo \
-    git \
-    flatpak \
-    "
-
-ARG DE_PACKAGES=" \
-    sway \
     "
 
 ARG ADDITIONAL_PACKAGES=" \
     zip unzip p7zip-full \
-    gnome-software gnome-software-plugin-flatpak \
+    podman \
+    fuse-overlayfs \
+    curl \
+    uidmap \
     "
-
-
 
 RUN \
     # \    
@@ -32,7 +29,6 @@ RUN \
     apt-get install -y --no-install-recommends $ADDITIONAL_PACKAGES && \
     # \
     
-
     # Clean \
     apt update && \
     apt-get remove -y foot && \
@@ -45,35 +41,28 @@ RUN \
         /tmp/*
 
 
+# Install Distrobox (latest version)
+RUN curl -s https://raw.githubusercontent.com/89luca89/distrobox/main/install | sh
 
 # Replace launch scripts
-COPY --chmod=777 scripts/launch-comp.sh scripts/startup.sh /opt/gow/
-COPY --chmod=777 scripts/startdbus.sh /opt/gow/startdbus
+# COPY --chmod=777 scripts/launch-comp.sh scripts/startup.sh /opt/gow/
+# COPY --chmod=777 scripts/startdbus.sh /opt/gow/startdbus
+COPY --chmod=777 scripts/startup.sh /opt/gow/startup-app.sh
 
 # Include default sway config
 COPY --chmod=777 --chown=retro:retro scripts/sway /opt/gow/sway
+COPY --chmod=777 --chown=retro:retro scripts/distrobox-sway-wrapper.sh /opt/gow/distrobox-sway-wrapper.sh
 
 # Fix locals
 COPY scripts/locale /etc/default/locale
 
+
 # 
 # Allow anyone to start dbus without password
 RUN echo "\nALL ALL=NOPASSWD: /opt/gow/startdbus" >> /etc/sudoers
+RUN echo "\nretro ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
-RUN chown root:root /usr/bin/bwrap
-RUN chmod a+x /usr/bin/bwrap
-
-ENV XDG_RUNTIME_DIR=/tmp/.X11-unix
+# RUN groupadd -f fuse && usermod -aG fuse retro
 
 ARG IMAGE_SOURCE
 LABEL org.opencontainers.image.source=$IMAGE_SOURCE
-
-
-# junest
-
-RUN git clone https://github.com/fsquillace/junest.git /home/retro/.local/share/junest 
-
-ENV PATH="$PATH:/home/retro/.junest/usr/bin_wrappers"
-ENV PATH="$PATH:/home/retro/.local/share/junest/bin"
-
-RUN  junest setup
