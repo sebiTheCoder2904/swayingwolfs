@@ -15,6 +15,8 @@ export QT_ENABLE_HIGHDPI_SCALING=1
 export DISPLAY=:0
 export $(dbus-launch)
 export REAL_WAYLAND_DISPLAY=$WAYLAND_DISPLAY
+# export XDG_RUNTIME_DIR=/run/host/run/user/wolf/
+# export PULSE_SERVER="unix:$XDG_RUNTIME_DIR/pulse-socket"
 
 
 

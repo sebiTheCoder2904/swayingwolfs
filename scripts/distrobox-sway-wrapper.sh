@@ -10,6 +10,6 @@ function launcher() {
     GAMESCOPE_MODE=${GAMESCOPE_MODE:-"-b"}
     echo "output * resolution ${GAMESCOPE_WIDTH}x${GAMESCOPE_HEIGHT} position 0,0" >> $HOME/.config/sway/config
 
-    /usr/games/gamescope "${GAMESCOPE_MODE}" -W "${GAMESCOPE_WIDTH}" -H "${GAMESCOPE_HEIGHT}" -r "${GAMESCOPE_REFRESH}" -- /usr/local/bin/distrobox enter arch-wolf -- bash -l -c "export XDG_RUNTIME_DIR=/run/host/run/user/wolf/ && exec sway"
+    /usr/games/gamescope "${GAMESCOPE_MODE}" -W "${GAMESCOPE_WIDTH}" -H "${GAMESCOPE_HEIGHT}" -r "${GAMESCOPE_REFRESH}" -- /usr/local/bin/distrobox enter arch-wolf -- bash -l -c "export XDG_RUNTIME_DIR=/run/host/run/user/wolf/ && export PULSE_SERVER=unix:/run/host/run/user/wolf/pulse-socket && export PULSE_COOKIE=/run/host/home/retro/.config/pulse/cookie && exec sway"
 
 }
